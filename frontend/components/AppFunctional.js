@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState } from "react";
 
 // önerilen başlangıç stateleri
@@ -84,22 +85,22 @@ export default function AppFunctional(props) {
     if (getXY().x === 1 && id === "left") {
       setState({
         ...state,
-        message: "Sola gidemezsiniz!",
+        message: "Sola gidemezsiniz",
       });
     } else if (getXY().x === 3 && id === "right") {
       setState({
         ...state,
-        message: "Sağa gidemezsiniz!",
+        message: "Sağa gidemezsiniz",
       });
     } else if (getXY().y === 1 && id === "up") {
       setState({
         ...state,
-        message: "Yukarıya gidemezsiniz!",
+        message: "Yukarıya gidemezsiniz",
       });
     } else if (getXY().y === 3 && id === "down") {
       setState({
         ...state,
-        message: "Aşağıya gidemezsiniz!",
+        message: "Aşağıya gidemezsiniz",
       });
     } else {
       sonrakiIndex(id);
@@ -118,33 +119,78 @@ export default function AppFunctional(props) {
 
   function onSubmit(evt) {
     // payloadu POST etmek için bir submit handlera da ihtiyacınız var.
+    evt.preventDefault();
+    axios
+      .post("http://localhost:9000/api/result", {
+        x: getXY().x,
+        y: getXY().y,
+        email: state.email,
+        steps: state.steps,
+      })
+      .then((response) => {
+        setState({
+          ...state,
+          message: response.data.message,
+          email: "",
+        });
+      })
+      .catch((error) => {
+        setState({
+          ...state,
+          message: error.response.data.message,
+        });
+      })
+      .finally(() => {
+        console.log("axios calisti");
+      });
   }
 
   return (
     <div id="wrapper" className={props.className}>
       <div className="info">
-        <h3 id="coordinates">Koordinatlar (2, 2)</h3>
-        <h3 id="steps">0 kere ilerlediniz</h3>
+        <h3 id="coordinates">
+          Koordinatlar ({getXY().x}, {getXY().y})
+        </h3>
+        <h3 id="steps">{state.steps} kere ilerlediniz</h3>
       </div>
       <div id="grid">
         {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((idx) => (
-          <div key={idx} className={`square${idx === 4 ? " active" : ""}`}>
-            {idx === 4 ? "B" : null}
+          <div
+            key={idx}
+            className={`square${idx === state.index ? " active" : ""}`}
+          >
+            {idx === state.index ? "B" : null}
           </div>
         ))}
       </div>
       <div className="info">
-        <h3 id="message"></h3>
+        <h3 id="message">{state.message}</h3>
       </div>
       <div id="keypad">
-        <button id="left">SOL</button>
-        <button id="up">YUKARI</button>
-        <button id="right">SAĞ</button>
-        <button id="down">AŞAĞI</button>
-        <button id="reset">reset</button>
+        <button id="left" onClick={ilerle}>
+          SOL
+        </button>
+        <button id="up" onClick={ilerle}>
+          YUKARI
+        </button>
+        <button id="right" onClick={ilerle}>
+          SAĞ
+        </button>
+        <button id="down" onClick={ilerle}>
+          AŞAĞI
+        </button>
+        <button id="reset" onClick={reset}>
+          reset
+        </button>
       </div>
-      <form>
-        <input id="email" type="email" placeholder="email girin"></input>
+      <form onSubmit={onSubmit}>
+        <input
+          id="email"
+          onChange={onChange}
+          value={state.email}
+          type="email"
+          placeholder="email girin"
+        ></input>
         <input id="submit" type="submit"></input>
       </form>
     </div>
