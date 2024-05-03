@@ -22,6 +22,11 @@ export default function AppFunctional(props) {
   function getXY() {
     // Koordinatları izlemek için bir state e sahip olmak gerekli değildir.
     // Bunları hesaplayabilmek için "B" nin hangi indexte olduğunu bilmek yeterlidir.
+
+    let x = (state.index % 3) + 1;
+    let y = Math.floor(state.index / 3) + 1;
+
+    return { x, y };
   }
 
   function getXYMesaj() {
@@ -39,15 +44,76 @@ export default function AppFunctional(props) {
     // Bu helper bir yön ("sol", "yukarı", vb.) alır ve "B" nin bir sonraki indeksinin ne olduğunu hesaplar.
     // Gridin kenarına ulaşıldığında başka gidecek yer olmadığı için,
     // şu anki indeksi değiştirmemeli.
+
+    if (yon === "left" && getXY().x !== 1) {
+      setState({
+        ...state,
+        index: state.index - 1,
+        steps: state.steps + 1,
+        message: "",
+      });
+    } else if (yon === "right" && getXY().x !== 3) {
+      setState({
+        ...state,
+        index: state.index + 1,
+        steps: state.steps + 1,
+        message: "",
+      });
+    } else if (yon === "up" && getXY().y !== 1) {
+      setState({
+        ...state,
+        index: state.index - 3,
+        steps: state.steps + 1,
+        message: "",
+      });
+    } else if (yon === "down" && getXY().y !== 3) {
+      setState({
+        ...state,
+        index: state.index + 3,
+        steps: state.steps + 1,
+        message: "",
+      });
+    }
   }
 
   function ilerle(evt) {
     // Bu event handler, "B" için yeni bir dizin elde etmek üzere yukarıdaki yardımcıyı kullanabilir,
     // ve buna göre state i değiştirir.
+    const { id } = evt.target;
+
+    if (getXY().x === 1 && id === "left") {
+      setState({
+        ...state,
+        message: "Sola gidemezsiniz!",
+      });
+    } else if (getXY().x === 3 && id === "right") {
+      setState({
+        ...state,
+        message: "Sağa gidemezsiniz!",
+      });
+    } else if (getXY().y === 1 && id === "up") {
+      setState({
+        ...state,
+        message: "Yukarıya gidemezsiniz!",
+      });
+    } else if (getXY().y === 3 && id === "down") {
+      setState({
+        ...state,
+        message: "Aşağıya gidemezsiniz!",
+      });
+    } else {
+      sonrakiIndex(id);
+    }
   }
 
   function onChange(evt) {
     // inputun değerini güncellemek için bunu kullanabilirsiniz
+    const { value } = evt.target;
+
+    setState({
+      ...state,
+      email: value,
+    });
   }
 
   function onSubmit(evt) {
