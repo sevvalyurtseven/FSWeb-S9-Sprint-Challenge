@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 // önerilen başlangıç stateleri
 //const initialMessage = ''
@@ -17,6 +17,8 @@ export default function AppFunctional(props) {
   // AŞAĞIDAKİ HELPERLAR SADECE ÖNERİDİR.
   // Bunları silip kendi mantığınızla sıfırdan geliştirebilirsiniz.
 
+  const [state, setState] = useState(initialState);
+
   function getXY() {
     // Koordinatları izlemek için bir state e sahip olmak gerekli değildir.
     // Bunları hesaplayabilmek için "B" nin hangi indexte olduğunu bilmek yeterlidir.
@@ -29,6 +31,7 @@ export default function AppFunctional(props) {
   }
 
   function reset() {
+    setState(initialState);
     // Tüm stateleri başlangıç ​​değerlerine sıfırlamak için bu helperı kullanın.
   }
 
